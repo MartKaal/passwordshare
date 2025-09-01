@@ -14,11 +14,7 @@ Route::get('/share', function () {
 })->name('share');
 
 // Default share password
-Route::post('/share', function () {
-    return (new ShareController())->store();
-})->name('share.store');
+Route::post('/share', [ShareController::class, 'store'])->name('share.store');
 
 // Share password with UUID
-Route::post('/share/{uuid}', function ($uuid) {
-    return (new ShareController())->show($uuid);
-})->name('share.show');
+Route::post('/share/{uuid}', [ShareController::class, 'show'])->name('share.show');

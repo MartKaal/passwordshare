@@ -9,7 +9,7 @@ class ShareController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request data
-        $validated = $request->validate([=
+        $validated = $request->validate([
             'password' => 'required|string',
         ]);
 
