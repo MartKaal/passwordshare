@@ -19,9 +19,11 @@ class ShareController extends Controller
     {
         $validated = $request->validate([
             'password' => 'required|string',
+            'tries' => 'required|integer|min:1',
+            'expires_in' => 'required|integer|min:1|max:72'
         ]);
 
-        $sharedPassword = $this->service->createSharedPassword($validated['password']);
+        $sharedPassword = $this->service->createSharedPassword($validated['password'], $validated['tries'], $validated['expires_in']);
         $link = $this->service->generateLink($sharedPassword->key);
 
         return response()->json(['message' => 'Password shared successfully!', 'link' => $link]);
