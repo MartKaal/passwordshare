@@ -1,47 +1,82 @@
-import axios from 'axios';
-import React from 'react';
+import PasswordTool from '@/components/PasswordTool';
 import { usePage } from '@inertiajs/react';
+import axios from 'axios';
+import { useState } from 'react';
 
 export default function Share() {
-    const [password, setPassword] = React.useState('');
+    const [password, setPassword] = useState('');
+    const [receivedPassword, setReceivedPassword] = useState('');
+    const [url, setUrl] = useState('');
+    const [mode, setMode] = useState('input');
+
     const { uuid } = usePage().props as { uuid?: string };
 
     const handleSubmit = () => {
-        console.log('Password shared:', password);
-        axios.post('/share', { 
-            password 
-        })
-        .then((res) => {
-            console.log('Password shared successfully', res);
-        })
-        .catch((error) => {
-            console.error('Error sharing password:', error);
-        });
+        axios
+            .post('/share', {
+                password,
+            })
+            .then((res) => {
+                setUrl(res.data.link);
+                setMode('generated');
+            })
+            .catch((error) => {});
+    };
+
+    const handleCopy = () => {
+        if (url) {
+            navigator.clipboard.writeText(url);
+        }
+    };
+
+    if (uuid) {
+        axios
+            .get(`/api/share/${uuid}`)
+            .then((res) => {
+                setReceivedPassword(res.data.password);
+                setMode('opened');
+            })
+            .catch((error) => {
+                console.error('Error retrieving shared password:', error);
+            });
     }
 
     return (
         <>
-            <div className='flex bg-slate-900 flex-col items-center justify-center min-h-screen'>
-                <h1 className='text-6xl font-black mb-2 text-cyan-400'>PasswordShare: {uuid}</h1>
-                <p className='text-lg text-white'>Deel jouw eigen wachtwoord veilig en eenvoudig met anderen.</p>
-                <div className="mb-6">
-                    <input 
-                        type="text" id="default-input" 
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder='Voer je wachtwoord in'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <button 
-                        type="button" 
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                        onClick={handleSubmit}
-                    >
-                        Genereer link
-                    </button>
-                </div>
-            </div>            
+            {mode === 'input' && (
+                <PasswordTool
+                    mode="input"
+                    title="Password Sharing Tool"
+                    subtitle="Deel jouw eigen wachtwoorden veilig met anderen mensen zonder erover na te hoeven denken."
+                    inputValue={password}
+                    setInputValue={setPassword}
+                    placeholder="Voer je wachtwoord in"
+                    buttonText="Genereer link"
+                    onButtonClick={handleSubmit}
+                />
+            )}
+
+            {mode === 'generated' && (
+                <PasswordTool
+                    mode="generated"
+                    title="Uw link is gegenereerd!"
+                    subtitle="De link is geldig voor 24 uur en kan eenmalig gebruikt worden."
+                    inputValue={url}
+                    buttonText="Kopieer naar klembord"
+                    onButtonClick={handleCopy}
+                />
+            )}
+
+            {mode === 'opened' && (
+                <PasswordTool
+                    mode="opened"
+                    title="Wachtwoord Ontvangen"
+                    subtitle="Je hebt een wachtwoord ontvangen."
+                    inputValue={receivedPassword}
+                    buttonText="Kopieer naar klembord"
+                    onButtonClick={handleCopy}
+                />
+            )}
         </>
-    )
+    );
 }

@@ -21,3 +21,6 @@ Route::get('/share/{uuid}', function ($uuid) {
 
 // Post shared password
 Route::post('/share', [ShareController::class, 'store'])->name('share.store');
+
+// Get Shared Password
+Route::get('/api/share/{uuid}', [ShareController::class, 'show'])->name('share.show');

@@ -30,9 +30,12 @@ class SharedPasswordService
 
         SharedPassword::where('key', $key)->update(['tries_left' => $tries_left - 1]);
 
-        if ($tries_left <= 0) {
-            SharedPassword::delete($password->id);
-            return null;
+        if ($tries_left === 0) {
+            $password->delete();
+        }
+
+        if ($tries_left < 0) {
+           return null;
         }
 
         return Crypt::decryptString($password->password);
