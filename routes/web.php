@@ -9,12 +9,15 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
+// Default share password
 Route::get('/share', function () {
     return Inertia::render('share');
 })->name('share');
 
-// Default share password
-Route::post('/share', [ShareController::class, 'store'])->name('share.store');
-
 // Share password with UUID
-Route::post('/share/{uuid}', [ShareController::class, 'show'])->name('share.show');
+Route::get('/share/{uuid}', function ($uuid) {
+    return Inertia::render('share', ['uuid' => $uuid]);
+})->name('share');
+
+// Post shared password
+Route::post('/share', [ShareController::class, 'store'])->name('share.store');

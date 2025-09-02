@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React from 'react'
+import React from 'react';
+import { usePage } from '@inertiajs/react';
 
 export default function Share() {
     const [password, setPassword] = React.useState('');
+    const { uuid } = usePage().props as { uuid?: string };
 
     const handleSubmit = () => {
         console.log('Password shared:', password);
@@ -20,7 +22,7 @@ export default function Share() {
     return (
         <>
             <div className='flex bg-slate-900 flex-col items-center justify-center min-h-screen'>
-                <h1 className='text-6xl font-black mb-2 text-cyan-400'>PasswordShare</h1>
+                <h1 className='text-6xl font-black mb-2 text-cyan-400'>PasswordShare: {uuid}</h1>
                 <p className='text-lg text-white'>Deel jouw eigen wachtwoord veilig en eenvoudig met anderen.</p>
                 <div className="mb-6">
                     <input 
