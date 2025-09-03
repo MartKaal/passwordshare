@@ -31,17 +31,13 @@ class SharedPasswordService
             return null;
         }
 
-        if ($sharedPassword->tries_left < 1) {
-            $sharedPassword->delete();
-            return null;
-        }
         if (now()->greaterThan($sharedPassword->expires_at)) {
             $sharedPassword->delete();
             return null;
         }
         $sharedPassword->decrement('tries_left');
 
-        if ($sharedPassword->tries_left === 1) {
+        if ($sharedPassword->tries_left < 1) {
             $sharedPassword->delete();
         }
 
