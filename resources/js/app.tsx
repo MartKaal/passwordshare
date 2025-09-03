@@ -1,10 +1,17 @@
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
+import axios from 'axios';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+if (token) {
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+}
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,
